@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A DigiBouquet for You</title>
-    <!-- Google Fonts for the exact cute, handwriting aesthetic -->
+    <!-- Google Fonts for the cute, handwriting aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@300..700&family=Pacifico&display=swap" rel="stylesheet">
@@ -12,7 +12,8 @@
     <style>
         :root {
             --bg-color: #fbc2d4; /* Soft pink background */
-            --accent-pink: #d14d72; /* Deep pink for text */
+            --accent-pink: #d14d72; /* Deep pink */
+            --btn-hover: #b03a5b;
             --card-bg: #fffbf7; /* Off-white for the paper card */
         }
 
@@ -30,18 +31,80 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 40px 20px;
+            overflow: hidden; /* Prevents scrolling while on the welcome screen */
             color: #4a4a4a;
         }
 
-        .container {
+        /* --- Welcome / Start Screen --- */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle, #fcd3e1 0%, #fbc2d4 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-title {
+            font-family: 'Pacifico', cursive;
+            color: var(--accent-pink);
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .start-btn {
+            background-color: var(--accent-pink);
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(209, 77, 114, 0.3);
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .start-btn:hover {
+            background-color: var(--btn-hover);
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(209, 77, 114, 0.4);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* --- Main Content Area --- */
+        #main-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease 0.3s, transform 1s ease 0.3s;
             width: 100%;
             max-width: 600px;
-            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 25px;
+            padding: 40px 20px;
+            z-index: 1;
         }
 
         /* Title styling */
@@ -51,6 +114,7 @@
             font-size: 2.8rem;
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
             margin-bottom: 10px;
+            text-align: center;
         }
 
         /* Bouquet Image Container */
@@ -64,7 +128,6 @@
             width: 100%;
             height: auto;
             object-fit: contain;
-            /* Simple hover effect to make it feel interactive */
             transition: transform 0.3s ease;
         }
         
@@ -81,7 +144,7 @@
             width: 100%;
             max-width: 400px;
             box-shadow: 0 10px 25px rgba(209, 77, 114, 0.15);
-            transform: rotate(-1deg); /* Slight tilt for a handwritten letter feel */
+            transform: rotate(-1deg);
             transition: transform 0.3s ease;
             text-align: left;
             position: relative;
@@ -91,7 +154,6 @@
             transform: rotate(0deg) scale(1.02);
         }
 
-        /* Cute decorative borders for the card */
         .letter-card::before {
             content: '';
             position: absolute;
@@ -115,7 +177,7 @@
             color: #5d5255;
             margin-bottom: 20px;
             font-weight: 400;
-            white-space: pre-line; /* Keeps line breaks */
+            white-space: pre-line;
         }
 
         .card-from {
@@ -177,19 +239,23 @@
             outline: none;
         }
 
-        /* Custom Audio Styling adjustments for browsers that support it */
         audio::-webkit-media-controls-panel {
             background-color: #fff0f3;
         }
 
-        /* Simple float/bounce animation for the music icon */
+        /* --- Animations --- */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
 
         @media (max-width: 480px) {
-            .title {
+            .title, .welcome-title {
                 font-size: 2.2rem;
             }
             .letter-card {
@@ -200,9 +266,16 @@
 </head>
 <body>
 
-    <div class="container">
+    <!-- 1. FIRST PAGE (WELCOME SCREEN) -->
+    <div id="welcome-screen">
+        <h1 class="welcome-title">A DigiBouquet for You</h1>
+        <div class="welcome-icon">🌸</div>
+        <button class="start-btn" id="start-btn">Open Your Bouquet</button>
+    </div>
+
+    <!-- 2. MAIN PAGE CONTENT (REVEALED ON ENTER) -->
+    <div id="main-content">
         
-        <!-- Web Title -->
         <h1 class="title">i am sorry</h1>
 
         <!-- Bouquet Image (Replace 'your-bouquet-image.png' with your picture path) -->
@@ -213,7 +286,8 @@
         <!-- Handwritten Letter Card -->
         <div class="letter-card">
             <div class="card-to">To: You</div>
-            <div class="card-message">"Hyeeeeee Madam gi,  lagta hai subah subah  hi mood of kar diya me ne ap ka wo kiya he na me jab bi kuch acha karne jata hu bura hu jata he 🥺 . Main toh bas yeh bolne aaya tha ki agar mere per ya kisi aur  par gussa nikalna ho toh bataiyega, main ready hoon. Par khud pareshan mat hoiye, dimaag ka dahi ho jata hai." aur ager meri koi bat achi nahi lagi to sorrrrrrrrrrrrrrrrrrry🥺👉👈✨"</div>
+            <div class="card-message">"Hyeeeeee Madam gi, 
+            lagta hai subah subah hi mood of kar diya me ne ap ka..."</div>
             <div class="card-from">From: me</div>
         </div>
 
@@ -222,17 +296,44 @@
             <div class="music-info">
                 <span class="music-icon">🎵</span>
                 <div class="music-text">
-                    <span class="music-title">.</span>
-                    <span class="music-sub">Music will try to start automatically. If it does not, press play.</span>
+                    <span class="music-title">Our Song</span>
+                    <span class="music-sub">Playing background music...</span>
                 </div>
             </div>
-            <audio controls autoplay loop>
+            <!-- Standard dynamic audio tag -->
+            <audio id="bg-music" controls loop>
                 <source src="song.mpeg" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
         </div>
 
     </div>
+
+    <!-- 3. INTERACTION SCRIPT -->
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const mainContent = document.getElementById('main-content');
+        const audio = document.getElementById('bg-music');
+
+        startBtn.addEventListener('click', () => {
+            // 1. Play the music immediately on button press (Mobile friendly!)
+            audio.play().catch(err => {
+                console.log("Audio autoplay failed or was blocked:", err);
+            });
+
+            // 2. Hide the welcome overlay smoothly
+            welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.visibility = 'hidden';
+
+            // 3. Allow scrolling on the main page now that they entered
+            document.body.style.overflow = 'auto';
+
+            // 4. Smoothly fade in the main content
+            mainContent.style.opacity = '1';
+            mainContent.style.transform = 'translateY(0)';
+        });
+    </script>
 
 </body>
 </html>
