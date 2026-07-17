@@ -7,7 +7,7 @@
     <!-- Google Fonts for the cute, handwriting aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@300..700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght=700&family=Fredoka:wght=300..700&family=Pacifico&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -188,59 +188,31 @@
             font-weight: 700;
         }
 
-        /* Music Player Card */
-        .music-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 8px 32px rgba(209, 77, 114, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+        /* Action Buttons styling */
+        .action-container {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .music-info {
-            display: flex;
+            gap: 20px;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
-            text-align: left;
-        }
-
-        .music-icon {
-            font-size: 1.8rem;
-            color: var(--accent-pink);
-            animation: bounce 2s infinite ease-in-out;
-        }
-
-        .music-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .music-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #4a4a4a;
-        }
-
-        .music-sub {
-            font-size: 0.85rem;
-            color: #7a7a7a;
-            margin-top: 2px;
-        }
-
-        audio {
+            margin-top: 15px;
             width: 100%;
-            outline: none;
+            min-height: 60px; /* Gives room for the running button */
         }
 
-        audio::-webkit-media-controls-panel {
-            background-color: #fff0f3;
+        .choice-btn {
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+
+        #no-btn {
+            background-color: #8e8e93;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.1s ease; /* Fast transition for moving away */
+        }
+        
+        #no-btn:hover {
+            background-color: #636366;
         }
 
         /* --- Animations --- */
@@ -249,17 +221,37 @@
             50% { transform: scale(1.15); }
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
         @media (max-width: 480px) {
             .title, .welcome-title {
                 font-size: 2.2rem;
             }
             .letter-card {
                 padding: 20px 15px;
+            }
+        }
+
+        /* Styling for the falling items */
+        .falling-emoji {
+            position: fixed;
+            top: -5vh; 
+            font-size: 1.8rem;
+            z-index: 9999; 
+            pointer-events: none; 
+            animation: fallDown linear forwards;
+        }
+
+        /* The falling movement animation */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg); 
+                opacity: 0;
             }
         }
     </style>
@@ -273,12 +265,12 @@
         <button class="start-btn" id="start-btn">Open Your Bouquet</button>
     </div>
 
-    <!-- 2. MAIN PAGE CONTENT (REVEALED ON ENTER) -->
+    <!-- 2. MAIN PAGE CONTENT -->
     <div id="main-content">
         
         <h1 class="title">i am sorry</h1>
 
-        <!-- Bouquet Image (Replace 'your-bouquet-image.png' with your picture path) -->
+        <!-- Bouquet Image -->
         <div class="bouquet-container">
             <img src="download (1).png" alt="A beautiful bouquet for you" class="bouquet-img">
         </div>
@@ -293,14 +285,20 @@ Maaf kar dein ❤️"</div>
             <div class="card-from">From: me</div>
         </div>
 
-            <!-- Standard dynamic audio tag -->
-            <audio id="bg-music" loop>
-                <source src="song.mpeg" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-            <div style="height: 50px; font-size: 50px;">👉🏻👈🏻</div>
-        </div>
+        <!-- Standard dynamic audio tag -->
+        <audio id="bg-music" loop>
+            <source src="song.mpeg" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        
+        <div style="font-size: 40px; margin-bottom: -10px;">👉🏻👈🏻</div>
 
+        <!-- TWO INTERACTIVE BUTTONS -->
+        <div class="action-container">
+            <button class="start-btn choice-btn" id="yes-btn">Maaf Kiya ❤️</button>
+            <button class="start-btn choice-btn" id="no-btn">Nahi 😤</button>
+        </div>
+        
     </div>
 
     <!-- 3. INTERACTION SCRIPT -->
@@ -309,24 +307,70 @@ Maaf kar dein ❤️"</div>
         const welcomeScreen = document.getElementById('welcome-screen');
         const mainContent = document.getElementById('main-content');
         const audio = document.getElementById('bg-music');
+        
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        let flowerInterval;
 
+        // Welcome screen action
         startBtn.addEventListener('click', () => {
-            // 1. Play the music immediately on button press (Mobile friendly!)
             audio.play().catch(err => {
                 console.log("Audio autoplay failed or was blocked:", err);
             });
 
-            // 2. Hide the welcome overlay smoothly
             welcomeScreen.style.opacity = '0';
             welcomeScreen.style.visibility = 'hidden';
-
-            // 3. Allow scrolling on the main page now that they entered
             document.body.style.overflow = 'auto';
-
-            // 4. Smoothly fade in the main content
             mainContent.style.opacity = '1';
             mainContent.style.transform = 'translateY(0)';
         });
+
+        // Flower Drop Logic
+        function startFlowerShower() {
+            // Prevent duplicate loops if clicked multiple times
+            if (flowerInterval) return; 
+
+            const emojis = ['🌸', '💖', '🌹', '💝', '✨', '🌷', '❤️'];
+            
+            flowerInterval = setInterval(() => {
+                const emojiElement = document.createElement('div');
+                emojiElement.classList.add('falling-emoji');
+                
+                emojiElement.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                emojiElement.style.left = Math.random() * 100 + 'vw';
+                emojiElement.style.fontSize = Math.random() * (2.2 - 1.2) + 1.2 + 'rem';
+                emojiElement.style.animationDuration = Math.random() * 3 + 3 + 's';
+                
+                document.body.appendChild(emojiElement);
+                
+                setTimeout(() => {
+                    emojiElement.remove();
+                }, 6000);
+            }, 120); 
+        }
+
+        // YES BUTTON: Triggers flower shower
+        yesBtn.addEventListener('click', () => {
+            startFlowerShower();
+            yesBtn.innerText = "Thank you Madam gii! 🥰";
+            yesBtn.style.transform = "scale(1.1)";
+            noBtn.style.display = "none"; // Hide the No button completely
+        });
+
+        // NO BUTTON: Runs away on hover or tap
+        const moveNoButton = () => {
+            // Pick a random spot inside the viewport boundaries
+            // Keeps it safe within visible margins
+            const x = Math.random() * (window.innerWidth - 140);
+            const y = Math.random() * (window.innerHeight - 60);
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        };
+
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', moveNoButton); // Works beautifully on smartphones!
     </script>
 
 </body>
